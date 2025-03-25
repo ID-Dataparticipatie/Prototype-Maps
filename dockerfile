@@ -1,7 +1,8 @@
 FROM alpine AS builder
 
 # Install dependencies
-RUN apk add nodejs npm
+RUN apk update && \
+apk add nodejs npm
 
 WORKDIR /app
 
