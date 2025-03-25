@@ -9,7 +9,7 @@ const MapComponent = () => {
   
 
   return (
-    <MapContainer center={position} zoom={13} className="leaflet-container">
+    <MapContainer center={position} zoom={13} className="leaflet-container ">
       
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -19,10 +19,6 @@ const MapComponent = () => {
         <Popup>Welkom in Den Haag team data & participatie!</Popup>
       </Marker>
     </MapContainer>
-
-    
-
-    
   );
 };
 
