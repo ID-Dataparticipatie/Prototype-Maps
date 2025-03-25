@@ -1,0 +1,10 @@
+services:
+  dataparticipatie:
+    image: dataparticipatie
+    container_name: dataparticipatie-web
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+      
