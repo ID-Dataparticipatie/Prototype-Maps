@@ -2,17 +2,16 @@ import MapComponent from "./MapComponent.jsx";
 
 function App() {
   return (
-    <div>
+    <div className="map-container">
+
       {/* Button met kaart erin */}
-      <button className="fullscreen-button">
+      {/* <button className="fullscreen-button">
         <MapComponent />
-      </button>
+      </button> */}
 
       {/* Hoofdkaart buiten de knop */}
-      <div className="map-container">
         <MapComponent />
       </div>
-    </div>
   );
 }
 
