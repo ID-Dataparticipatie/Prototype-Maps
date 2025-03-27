@@ -30,6 +30,7 @@ function MapComponent() {
 
 
   function MapClickHandler() {
+    //TODO : Add some filtering to avoid setting markers on top of each other
     useMapEvents({
       click(e) {
         const newMarker = {
