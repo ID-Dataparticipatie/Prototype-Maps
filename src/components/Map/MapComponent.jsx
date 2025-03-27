@@ -60,9 +60,9 @@ function MapComponent() {
 
   return (
     <div className="flex items-center justify-center">
-      <MapContainer
-        center={[52.0705, 4.3007]}
-        zoom={13}
+      <MapContainer 
+        center={[52.0667905, 4.3234636]}
+        zoom={25}
         // scrollWheelZoom={false}
         preferCanvas={true}
         className="h-[91vh] w-full overflow-hidden">
