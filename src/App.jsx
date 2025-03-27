@@ -2,16 +2,18 @@ import MapComponent from "./MapComponent.jsx";
 
 function App() {
   return (
-    <div className="map-container">
+    <div>
 
-      {/* Button met kaart erin */}
-      {/* <button className="fullscreen-button">
-        <MapComponent />
-      </button> */}
+<header className="header">
+        <img src="images.png" alt="Den Haag Logo" className="logo" />
+      </header>
+      
 
-      {/* Hoofdkaart buiten de knop */}
+      
+      <div className="map-container">
         <MapComponent />
       </div>
+    </div>
   );
 }
 
