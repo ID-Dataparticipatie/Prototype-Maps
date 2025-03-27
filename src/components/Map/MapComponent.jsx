@@ -63,7 +63,7 @@ function MapComponent() {
       <MapContainer
         center={[52.0705, 4.3007]}
         zoom={13}
-        scrollWheelZoom={false}
+        // scrollWheelZoom={false}
         preferCanvas={true}
         className="h-[91vh] w-full overflow-hidden">
         <TileLayer
@@ -83,7 +83,14 @@ function MapComponent() {
                 onChange={(e) => updateMarkerText(marker.id, e.target.value)}
               />
               <br />
-              <button onClick={() => removeMarker(marker.id)}>🗑 Verwijder deze pin</button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevents triggering the map click event
+                  removeMarker(marker.id);
+                }}
+              >
+                🗑 Verwijder deze pin
+              </button>
             </Popup>
           </Marker>
         ))}
