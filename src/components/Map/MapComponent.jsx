@@ -59,33 +59,36 @@ function MapComponent() {
   };
 
   return (
-    <MapContainer
-      center={[52.0705, 4.3007]}
-      zoom={13}
-      scrollWheelZoom={false}
-      className="h-300">
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      />
+    <div className="flex items-center justify-center">
+      <MapContainer
+        center={[52.0705, 4.3007]}
+        zoom={13}
+        scrollWheelZoom={false}
+        preferCanvas={true}
+        className="h-[91vh] w-full overflow-hidden">
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        />
 
-      <MapClickHandler />
+        <MapClickHandler />
 
-      {markers.map((marker) => (
-        <Marker key={marker.id} position={[marker.lat, marker.lng]} icon={customIcon}>
-          <Popup>
-            <input
-              type="text"
-              placeholder="Voer een naam in..."
-              value={marker.text}
-              onChange={(e) => updateMarkerText(marker.id, e.target.value)}
-            />
-            <br />
-            <button onClick={() => removeMarker(marker.id)}>🗑 Verwijder deze pin</button>
-          </Popup>
-        </Marker>
-      ))}
-    </MapContainer>
+        {markers.map((marker) => (
+          <Marker key={marker.id} position={[marker.lat, marker.lng]} icon={customIcon}>
+            <Popup>
+              <input
+                type="text"
+                placeholder="Voer een naam in..."
+                value={marker.text}
+                onChange={(e) => updateMarkerText(marker.id, e.target.value)}
+              />
+              <br />
+              <button onClick={() => removeMarker(marker.id)}>🗑 Verwijder deze pin</button>
+            </Popup>
+          </Marker>
+        ))}
+      </MapContainer>
+    </div>
   );
 }
 

@@ -9,7 +9,7 @@ function App() {
       {/* Should have a maincontent thingy but since we are only displaying the map I couldn't be arsed */}
       <MapComponent />
       {/* Footer */}
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }
