@@ -30,7 +30,6 @@ function MapComponent() {
 
 
   function MapClickHandler() {
-    //TODO : Add some filtering to avoid setting markers on top of each other
     useMapEvents({
       click(e) {
         const newMarker = {
@@ -39,10 +38,18 @@ function MapComponent() {
           lng: e.latlng.lng,
           text: "",
         };
+        if(markers.find(marker => calcDistance(marker.lat, marker.lng, newMarker.lat, newMarker.lng) < 0.0001)) {
+          return;
+        }
         setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
       },
     });
     return null;
+  }
+
+  function calcDistance(x1,y1,x2,y2) {
+    // Standard pythagorean theorem
+    return Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
   }
 
 
