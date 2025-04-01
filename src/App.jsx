@@ -1,18 +1,15 @@
-import MapComponent from "./MapComponent.jsx";
+import Footer from './components/Footer/Footer';
+import Header from './components/Header/Header';
+import MapComponent from './components/Map/MapComponent';
 
 function App() {
   return (
-    <div>
-
-<header className="header">
-        <img src="images.png" alt="Den Haag Logo" className="logo" />
-      </header>
-      
-
-      
-      <div className="map-container">
-        <MapComponent />
-      </div>
+    <div className='bg-gray-900'>
+      <Header />
+      {/* Should have a maincontent thingy but since we are only displaying the map I couldn't be arsed */}
+      <MapComponent />
+      {/* Footer */}
+      {/* <Footer /> */}
     </div>
   );
 }
