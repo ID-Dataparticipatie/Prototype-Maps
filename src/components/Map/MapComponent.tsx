@@ -14,12 +14,19 @@ const customIcon = new L.Icon({
   iconAnchor: [12, 41],
 });
 
+interface TestMarker {
+  id: number;
+  lat: number;
+  lng: number;
+  text: string;
+}
+
 function MapComponent() {
-  const [markers, setMarkers] = useState([]);
+  const [markers, setMarkers] = useState<TestMarker[]>([]);
 
 
   useEffect(() => {
-    const savedMarkers = JSON.parse(localStorage.getItem("markers")) || [];
+    const savedMarkers = JSON.parse(localStorage.getItem("markers") ?? "") || [];
     setMarkers(savedMarkers);
   }, []);
 
@@ -32,7 +39,7 @@ function MapComponent() {
   function MapClickHandler() {
     useMapEvents({
       click(e) {
-        const newMarker = {
+        const newMarker: TestMarker = {
           id: Date.now(),
           lat: e.latlng.lat,
           lng: e.latlng.lng,
@@ -47,13 +54,13 @@ function MapComponent() {
     return null;
   }
 
-  function calcDistance(x1,y1,x2,y2) {
+  function calcDistance(x1:number,y1:number,x2:number,y2:number) {
     // Standard pythagorean theorem
     return Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
   }
 
 
-  const updateMarkerText = (id, newText) => {
+  const updateMarkerText = (id:number, newText:string) => {
     setMarkers((prevMarkers) =>
       prevMarkers.map((marker) =>
         marker.id === id ? { ...marker, text: newText } : marker
@@ -62,7 +69,7 @@ function MapComponent() {
   };
 
 
-  const removeMarker = (id) => {
+  const removeMarker = (id:number) => {
     setMarkers((prevMarkers) => prevMarkers.filter((marker) => marker.id !== id));
   };
 

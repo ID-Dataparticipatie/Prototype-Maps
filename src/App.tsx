@@ -1,6 +1,6 @@
-import Footer from './components/Footer/Footer';
-import Header from './components/Header/Header';
-import MapComponent from './components/Map/MapComponent';
+import Footer from './components/Footer/Footer.tsx';
+import Header from './components/Header/Header.tsx';
+import MapComponent from './components/Map/MapComponent.tsx';
 
 function App() {
   return (
