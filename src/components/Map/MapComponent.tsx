@@ -1,10 +1,4 @@
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-  useMapEvents,
-} from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
 import { useState, useEffect } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -36,8 +30,7 @@ function MapComponent() {
   const [markers, setMarkers] = useState<TestMarker[]>([]);
 
   useEffect(() => {
-    const savedMarkers =
-      JSON.parse(localStorage.getItem("markers") ?? "") || [];
+    const savedMarkers = JSON.parse(localStorage.getItem("markers") ?? "") || [];
     setMarkers(savedMarkers);
   }, []);
 
@@ -56,13 +49,7 @@ function MapComponent() {
         };
         if (
           markers.find(
-            (marker) =>
-              calcDistance(
-                marker.lat,
-                marker.lng,
-                newMarker.lat,
-                newMarker.lng
-              ) < 0.0001
+            (marker) => calcDistance(marker.lat, marker.lng, newMarker.lat, newMarker.lng) < 0.0001
           )
         ) {
           return;
@@ -80,16 +67,12 @@ function MapComponent() {
 
   const updateMarkerText = (id: number, newText: string) => {
     setMarkers((prevMarkers) =>
-      prevMarkers.map((marker) =>
-        marker.id === id ? { ...marker, text: newText } : marker
-      )
+      prevMarkers.map((marker) => (marker.id === id ? { ...marker, text: newText } : marker))
     );
   };
 
   const removeMarker = (id: number) => {
-    setMarkers((prevMarkers) =>
-      prevMarkers.filter((marker) => marker.id !== id)
-    );
+    setMarkers((prevMarkers) => prevMarkers.filter((marker) => marker.id !== id));
   };
 
   return (
@@ -102,8 +85,7 @@ function MapComponent() {
         // Locks the map to disallow scrolling outside of the map view.
         maxBounds={bounds}
         maxBoundsViscosity={1.0}
-        minZoom={3}
-      >
+        minZoom={3}>
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -113,11 +95,7 @@ function MapComponent() {
         <MapClickHandler />
 
         {markers.map((marker) => (
-          <Marker
-            key={marker.id}
-            position={[marker.lat, marker.lng]}
-            icon={customIcon}
-          >
+          <Marker key={marker.id} position={[marker.lat, marker.lng]} icon={customIcon}>
             <Popup>
               <input
                 type="text"
@@ -130,8 +108,7 @@ function MapComponent() {
                 onClick={(e) => {
                   e.stopPropagation(); // Prevents triggering the map click event
                   removeMarker(marker.id);
-                }}
-              >
+                }}>
                 🗑 Verwijder deze pin
               </button>
             </Popup>

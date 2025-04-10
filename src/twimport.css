@@ -39,7 +39,7 @@
 }
 
 @layer components {
-    .denhaag-text {
-        color: var(--denhaag-text);
-    }
+  .denhaag-text {
+    color: var(--denhaag-text);
   }
+}
