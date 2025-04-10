@@ -6,8 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "format": "prettier --write .",
     "lint": "eslint .",
-    "preview": "npm run build && vite preview"
+    "check": "prettier --check ."
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.0.17",
@@ -24,14 +26,15 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
+    "@types/leaflet": "^1.9.17",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.1",
-    "@types/leaflet": "^1.9.17",
     "@vitejs/plugin-react": "^4.3.4",
     "eslint": "^9.21.0",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^15.15.0",
+    "prettier": "3.5.3",
     "vite": "^6.2.0"
   }
 }
