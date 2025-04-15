@@ -1,11 +1,16 @@
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents, LayersControl } from "react-leaflet";
 import { useState, useEffect } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { loadGeoJson } from "../../util/loadGeoJson";
 
 // Fix voor ontbrekende Leaflet marker-icon
 import markerIconPng from "leaflet/dist/images/marker-icon.png";
 import markerShadowPng from "leaflet/dist/images/marker-shadow.png";
+import GeoJSONLayer from "./GeoJSONLayer";
+import type { MapMarkerWithText, NamedFeatureCollection } from "../../typings";
+
+
 
 const customIcon = new L.Icon({
   iconUrl: markerIconPng,
@@ -19,19 +24,26 @@ const bounds = L.latLngBounds([
   [85, 180], // Northeast
 ]);
 
-interface TestMarker {
-  id: number;
-  lat: number;
-  lng: number;
-  text: string;
-}
+
+
+
 
 function MapComponent() {
-  const [markers, setMarkers] = useState<TestMarker[]>([]);
+  const [markers, setMarkers] = useState<MapMarkerWithText[]>([]);
+  const [geoJsonDatasets, setGeoJson] = useState<NamedFeatureCollection[]>([]);
 
   useEffect(() => {
-    const savedMarkers = JSON.parse(localStorage.getItem("markers") ?? "") || [];
-    setMarkers(savedMarkers);
+    loadGeoJson()
+      .then((data) => setGeoJson(data))
+      .catch((err) => console.error("Error fetching datasets:", err));
+  }, []);
+
+  useEffect(() => {
+    let savedData = localStorage.getItem("markers");
+    if (savedData) {
+      const savedMarkers = JSON.parse(savedData) || [];
+      setMarkers(savedMarkers);
+    }
   }, []);
 
   useEffect(() => {
@@ -41,7 +53,7 @@ function MapComponent() {
   function MapClickHandler() {
     useMapEvents({
       click(e) {
-        const newMarker: TestMarker = {
+        const newMarker: MapMarkerWithText = {
           id: Date.now(),
           lat: e.latlng.lat,
           lng: e.latlng.lng,
@@ -86,34 +98,57 @@ function MapComponent() {
         maxBounds={bounds}
         maxBoundsViscosity={1.0}
         minZoom={3}>
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          noWrap={true}
-        />
 
         <MapClickHandler />
 
-        {markers.map((marker) => (
-          <Marker key={marker.id} position={[marker.lat, marker.lng]} icon={customIcon}>
-            <Popup>
-              <input
-                type="text"
-                placeholder="Voer een naam in..."
-                value={marker.text}
-                onChange={(e) => updateMarkerText(marker.id, e.target.value)}
-              />
-              <br />
-              <button
-                onClick={(e) => {
-                  e.stopPropagation(); // Prevents triggering the map click event
-                  removeMarker(marker.id);
-                }}>
-                🗑 Verwijder deze pin
-              </button>
-            </Popup>
-          </Marker>
-        ))}
+        <LayersControl position="topright">
+          <LayersControl.BaseLayer checked name="OpenStreetMap">
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              noWrap={true}
+            />
+          </LayersControl.BaseLayer>
+
+          <LayersControl.BaseLayer name="Esri Satellite">
+            <TileLayer
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+              attribution="Tiles © Esri"
+              noWrap={true}
+            />
+          </LayersControl.BaseLayer>
+
+          {geoJsonDatasets.map((dataset) => (
+            <GeoJSONLayer
+              key={dataset.name}
+              data={dataset}
+              layername={dataset.name}
+              style={{ color: dataset.color, weight: 1, fillOpacity: 0.5 }}
+            />
+          ))}
+
+          {markers.map((marker) => (
+            <Marker key={marker.id} position={[marker.lat, marker.lng]} icon={customIcon}>
+              <Popup>
+                <input
+                  type="text"
+                  placeholder="Voer een naam in..."
+                  value={marker.text}
+                  onChange={(e) => updateMarkerText(marker.id, e.target.value)}
+                />
+                <br />
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevents triggering the map click event
+                    removeMarker(marker.id);
+                  }}>
+                  🗑 Verwijder deze pin
+                </button>
+              </Popup>
+            </Marker>
+          ))}
+        </LayersControl>
+
       </MapContainer>
     </div>
   );
