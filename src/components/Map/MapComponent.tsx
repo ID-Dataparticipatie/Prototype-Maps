@@ -1,9 +1,16 @@
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  useMapEvents,
+  GeoJSON,
+  LayersControl,
+} from "react-leaflet";
 import { useState, useEffect } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-// Fix voor ontbrekende Leaflet marker-icon
 import markerIconPng from "leaflet/dist/images/marker-icon.png";
 import markerShadowPng from "leaflet/dist/images/marker-shadow.png";
 
@@ -15,8 +22,8 @@ const customIcon = new L.Icon({
 });
 
 const bounds = L.latLngBounds([
-  [-85, -180], // Southwest
-  [85, 180], // Northeast
+  [-85, -180],
+  [85, 180],
 ]);
 
 interface TestMarker {
@@ -28,9 +35,29 @@ interface TestMarker {
 
 function MapComponent() {
   const [markers, setMarkers] = useState<TestMarker[]>([]);
+  const [stroomData, setStroomData] = useState<any>(null);
+  const [rioolData, setRioolData] = useState<any>(null);
+  const [hoofdnetwerkData, setHoofdnetwerkData] = useState<any>(null);
 
   useEffect(() => {
-    const savedMarkers = JSON.parse(localStorage.getItem("markers") ?? "") || [];
+    fetch("/stroom.geojson")
+      .then((res) => res.json())
+      .then(setStroomData)
+      .catch((err) => console.error("Fout bij laden stroom (banaan2.geojson):", err));
+
+    fetch("/riool.geojson")
+      .then((res) => res.json())
+      .then(setRioolData)
+      .catch((err) => console.error("Fout bij laden riool (buizen.geojson):", err));
+
+    fetch("/hoofdnetwerk.geojson")
+      .then((res) => res.json())
+      .then(setHoofdnetwerkData)
+      .catch((err) => console.error("Fout bij laden hoofdnetwerk.geojson:", err));
+  }, []);
+
+  useEffect(() => {
+    const savedMarkers = JSON.parse(localStorage.getItem("markers") ?? "[]");
     setMarkers(savedMarkers);
   }, []);
 
@@ -38,7 +65,7 @@ function MapComponent() {
     localStorage.setItem("markers", JSON.stringify(markers));
   }, [markers]);
 
-  function MapClickHandler() {
+  const MapClickHandler = () => {
     useMapEvents({
       click(e) {
         const newMarker: TestMarker = {
@@ -58,12 +85,11 @@ function MapComponent() {
       },
     });
     return null;
-  }
+  };
 
-  function calcDistance(x1: number, y1: number, x2: number, y2: number) {
-    // Standard pythagorean theorem
-    return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
-  }
+  const calcDistance = (x1: number, y1: number, x2: number, y2: number) => {
+    return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+  };
 
   const updateMarkerText = (id: number, newText: string) => {
     setMarkers((prevMarkers) =>
@@ -80,40 +106,92 @@ function MapComponent() {
       <MapContainer
         center={[52.0667905, 4.3234636]}
         zoom={25}
-        preferCanvas={true}
+        preferCanvas
         className="h-[91vh] w-full overflow-hidden"
-        // Locks the map to disallow scrolling outside of the map view.
         maxBounds={bounds}
         maxBoundsViscosity={1.0}
         minZoom={3}>
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          noWrap={true}
-        />
-
         <MapClickHandler />
 
-        {markers.map((marker) => (
-          <Marker key={marker.id} position={[marker.lat, marker.lng]} icon={customIcon}>
-            <Popup>
-              <input
-                type="text"
-                placeholder="Voer een naam in..."
-                value={marker.text}
-                onChange={(e) => updateMarkerText(marker.id, e.target.value)}
+        <LayersControl position="topright">
+          <LayersControl.BaseLayer checked name="OpenStreetMap">
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              noWrap
+            />
+          </LayersControl.BaseLayer>
+
+          <LayersControl.BaseLayer name="Esri Satellite">
+            <TileLayer
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+              attribution="Tiles © Esri"
+              noWrap
+            />
+          </LayersControl.BaseLayer>
+
+          {stroomData && (
+            <LayersControl.Overlay checked name="Stroom Laag">
+              <GeoJSON
+                data={stroomData}
+                style={{ color: "yellow", weight: 2, opacity: 0.7 }}
+                onEachFeature={(feature, layer) => {
+                  const naam = feature.properties?.name || "Onbekende stroomlijn";
+                  layer.bindPopup(`⚡ ${naam}`);
+                }}
               />
-              <br />
-              <button
-                onClick={(e) => {
-                  e.stopPropagation(); // Prevents triggering the map click event
-                  removeMarker(marker.id);
-                }}>
-                🗑 Verwijder deze pin
-              </button>
-            </Popup>
-          </Marker>
-        ))}
+            </LayersControl.Overlay>
+          )}
+
+          {rioolData && (
+            <LayersControl.Overlay checked name="Riool Laag">
+              <GeoJSON
+                data={rioolData}
+                style={{ color: "blue", weight: 2, opacity: 0.7 }}
+                onEachFeature={(feature, layer) => {
+                  const naam = feature.properties?.name || "Onbekende rioolbuis";
+                  layer.bindPopup(`💧 ${naam}`);
+                }}
+              />
+            </LayersControl.Overlay>
+          )}
+
+          {hoofdnetwerkData && (
+            <LayersControl.Overlay checked name="Hoofdnetwerk Laag">
+              <GeoJSON
+                data={hoofdnetwerkData}
+                style={{ color: "orange", weight: 2, opacity: 0.7 }}
+                onEachFeature={(feature, layer) => {
+                  const naam = feature.properties?.name || "Hoofdnetwerk";
+                  layer.bindPopup(`🟠 ${naam}`);
+                }}
+              />
+            </LayersControl.Overlay>
+          )}
+
+          <LayersControl.Overlay checked name="Pinnetjes">
+            {markers.map((marker) => (
+              <Marker key={marker.id} position={[marker.lat, marker.lng]} icon={customIcon}>
+                <Popup>
+                  <input
+                    type="text"
+                    placeholder="Voer een naam in..."
+                    value={marker.text}
+                    onChange={(e) => updateMarkerText(marker.id, e.target.value)}
+                  />
+                  <br />
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeMarker(marker.id);
+                    }}>
+                    🗑 Verwijder deze pin
+                  </button>
+                </Popup>
+              </Marker>
+            ))}
+          </LayersControl.Overlay>
+        </LayersControl>
       </MapContainer>
     </div>
   );
