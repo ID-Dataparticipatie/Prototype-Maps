@@ -1,4 +1,11 @@
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents, LayersControl } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  useMapEvents,
+  LayersControl,
+} from "react-leaflet";
 import { useState, useEffect } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -9,8 +16,6 @@ import markerIconPng from "leaflet/dist/images/marker-icon.png";
 import markerShadowPng from "leaflet/dist/images/marker-shadow.png";
 import GeoJSONLayer from "./GeoJSONLayer";
 import type { MapMarkerWithText, NamedFeatureCollection } from "../../typings";
-
-
 
 const customIcon = new L.Icon({
   iconUrl: markerIconPng,
@@ -24,10 +29,6 @@ const bounds = L.latLngBounds([
   [85, 180], // Northeast
 ]);
 
-
-
-
-
 function MapComponent() {
   const [markers, setMarkers] = useState<MapMarkerWithText[]>([]);
   const [geoJsonDatasets, setGeoJson] = useState<NamedFeatureCollection[]>([]);
@@ -39,7 +40,7 @@ function MapComponent() {
   }, []);
 
   useEffect(() => {
-    let savedData = localStorage.getItem("markers");
+    const savedData = localStorage.getItem("markers");
     if (savedData) {
       const savedMarkers = JSON.parse(savedData) || [];
       setMarkers(savedMarkers);
@@ -98,7 +99,6 @@ function MapComponent() {
         maxBounds={bounds}
         maxBoundsViscosity={1.0}
         minZoom={3}>
-
         <MapClickHandler />
 
         <LayersControl position="topright">
@@ -148,7 +148,6 @@ function MapComponent() {
             </Marker>
           ))}
         </LayersControl>
-
       </MapContainer>
     </div>
   );
