@@ -5,6 +5,7 @@ import {
   Popup,
   useMapEvents,
   LayersControl,
+  LayerGroup,
 } from "react-leaflet";
 import { useState, useEffect } from "react";
 import L from "leaflet";
@@ -127,26 +128,30 @@ function MapComponent() {
             />
           ))}
 
-          {markers.map((marker) => (
-            <Marker key={marker.id} position={[marker.lat, marker.lng]} icon={customIcon}>
-              <Popup>
-                <input
-                  type="text"
-                  placeholder="Voer een naam in..."
-                  value={marker.text}
-                  onChange={(e) => updateMarkerText(marker.id, e.target.value)}
-                />
-                <br />
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevents triggering the map click event
-                    removeMarker(marker.id);
-                  }}>
-                  🗑 Verwijder deze pin
-                </button>
-              </Popup>
-            </Marker>
-          ))}
+          <LayersControl.Overlay checked name="Markers">
+            <LayerGroup>
+              {markers.map((marker) => (
+                <Marker key={marker.id} position={[marker.lat, marker.lng]} icon={customIcon}>
+                  <Popup>
+                    <input
+                      type="text"
+                      placeholder="Voer een naam in..."
+                      value={marker.text}
+                      onChange={(e) => updateMarkerText(marker.id, e.target.value)}
+                    />
+                    <br />
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevents triggering the map click event
+                        removeMarker(marker.id);
+                      }}>
+                      🗑 Verwijder deze pin
+                    </button>
+                  </Popup>
+                </Marker>
+              ))}
+            </LayerGroup>
+          </LayersControl.Overlay>
         </LayersControl>
       </MapContainer>
     </div>
