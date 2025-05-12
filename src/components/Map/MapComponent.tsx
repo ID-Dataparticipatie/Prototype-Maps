@@ -10,8 +10,9 @@ import {
 import { useState, useEffect } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import * as turf from "@turf/turf";
 
-import markerIconPng from "leaflet/dist/images/marker-icon.png";
+import markerIconPng from "/icon.png";
 import markerShadowPng from "leaflet/dist/images/marker-shadow.png";
 
 const customIcon = new L.Icon({
@@ -65,30 +66,64 @@ function MapComponent() {
     localStorage.setItem("markers", JSON.stringify(markers));
   }, [markers]);
 
+  const calcDistance = (x1: number, y1: number, x2: number, y2: number) => {
+    return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+  };
+
   const MapClickHandler = () => {
     useMapEvents({
       click(e) {
+        const point = turf.point([e.latlng.lng, e.latlng.lat]);
+
+        const layersToCheck = [
+          { data: stroomData, type: "stroomkabel", emoji: "⚡" },
+          { data: rioolData, type: "rioolbuis", emoji: "💧" },
+          { data: hoofdnetwerkData, type: "hoofdnetwerk", emoji: "🟠" },
+        ];
+
+        for (const layer of layersToCheck) {
+          if (!layer.data) continue;
+
+          const intersects = layer.data.features.some((feature: any) => {
+            const geometry = feature.geometry;
+            if (!geometry) return false;
+
+            if (geometry.type === "LineString" || geometry.type === "MultiLineString") {
+              return turf.booleanPointOnLine(point, feature, { ignoreEndVertices: true });
+            }
+
+            if (geometry.type === "Polygon" || geometry.type === "MultiPolygon") {
+              return turf.booleanPointInPolygon(point, feature);
+            }
+
+            return false;
+          });
+
+          if (intersects) {
+            alert(`⛔ Je kunt hier geen pin plaatsen – ${layer.emoji} ${layer.type} aanwezig.`);
+            return;
+          }
+        }
+
+        // Check op dubbele pin op bijna dezelfde locatie
         const newMarker: TestMarker = {
           id: Date.now(),
           lat: e.latlng.lat,
           lng: e.latlng.lng,
           text: "",
         };
-        if (
-          markers.find(
-            (marker) => calcDistance(marker.lat, marker.lng, newMarker.lat, newMarker.lng) < 0.0001
-          )
-        ) {
-          return;
-        }
-        setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
+
+        const isDuplicate = markers.some(
+          (marker) => calcDistance(marker.lat, marker.lng, newMarker.lat, newMarker.lng) < 0.0001
+        );
+
+        if (isDuplicate) return;
+
+        setMarkers((prev) => [...prev, newMarker]);
       },
     });
-    return null;
-  };
 
-  const calcDistance = (x1: number, y1: number, x2: number, y2: number) => {
-    return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+    return null;
   };
 
   const updateMarkerText = (id: number, newText: string) => {
@@ -131,10 +166,10 @@ function MapComponent() {
           </LayersControl.BaseLayer>
 
           {stroomData && (
-            <LayersControl.Overlay checked name="Stroom Laag">
+            <LayersControl.Overlay checked={false} name="Stroom Laag">
               <GeoJSON
                 data={stroomData}
-                style={{ color: "yellow", weight: 2, opacity: 0.7 }}
+                style={{ color: "yellow", weight: 6, opacity: 0 }}
                 onEachFeature={(feature, layer) => {
                   const naam = feature.properties?.name || "Onbekende stroomlijn";
                   layer.bindPopup(`⚡ ${naam}`);
@@ -144,10 +179,10 @@ function MapComponent() {
           )}
 
           {rioolData && (
-            <LayersControl.Overlay checked name="Riool Laag">
+            <LayersControl.Overlay checked={false} name="Riool Laag">
               <GeoJSON
                 data={rioolData}
-                style={{ color: "blue", weight: 2, opacity: 0.7 }}
+                style={{ color: "blue", weight: 6, opacity: 0 }}
                 onEachFeature={(feature, layer) => {
                   const naam = feature.properties?.name || "Onbekende rioolbuis";
                   layer.bindPopup(`💧 ${naam}`);
@@ -157,10 +192,10 @@ function MapComponent() {
           )}
 
           {hoofdnetwerkData && (
-            <LayersControl.Overlay checked name="Hoofdnetwerk Laag">
+            <LayersControl.Overlay checked={false} name="Hoofdnetwerk Laag">
               <GeoJSON
                 data={hoofdnetwerkData}
-                style={{ color: "orange", weight: 2, opacity: 0.7 }}
+                style={{ color: "orange", weight: 6, opacity: 0 }}
                 onEachFeature={(feature, layer) => {
                   const naam = feature.properties?.name || "Hoofdnetwerk";
                   layer.bindPopup(`🟠 ${naam}`);
