@@ -2,7 +2,7 @@ import MapComponent from "../components/Map/MapComponent.tsx";
 
 function MapPage() {
   return (
-    <div className="bg-gray-900">
+    <div className="bg-white">
       <MapComponent />
     </div>
   );
