@@ -9,7 +9,6 @@ const datasetMap = {
   riool: "/geojson/riool.geojson",
 };
 
-// Function to fetch all datasets and return as an array
 export const loadGeoJson = async (): Promise<NamedFeatureCollection[]> => {
   const datasetPromises = Object.values(datasetMap).map((url) =>
     fetch(url).then((res) => {

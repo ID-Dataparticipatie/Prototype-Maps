@@ -99,7 +99,8 @@ function MapComponent() {
         // Locks the map to disallow scrolling outside of the map view.
         maxBounds={bounds}
         maxBoundsViscosity={1.0}
-        minZoom={3}>
+        minZoom={4}>
+          
         <MapClickHandler />
 
         <LayersControl position="topright">
