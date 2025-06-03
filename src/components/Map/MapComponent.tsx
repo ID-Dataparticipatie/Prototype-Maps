@@ -11,6 +11,7 @@ import { useState, useEffect } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { loadGeoJson } from "../../util/loadGeoJson";
+import LeafletControlGeocoder from "./LeafletControlGeocoder";
 
 // Fix voor ontbrekende Leaflet marker-icon
 import markerIconPng from "leaflet/dist/images/marker-icon.png";
@@ -18,7 +19,7 @@ import markerShadowPng from "leaflet/dist/images/marker-shadow.png";
 import GeoJSONLayer from "./GeoJSONLayer";
 import type { MapMarkerWithText, NamedFeatureCollection } from "../../typings";
 
-const customIcon = new L.Icon({
+export const leafletMarkerIcon = new L.Icon({
   iconUrl: markerIconPng,
   shadowUrl: markerShadowPng,
   iconSize: [25, 41],
@@ -100,8 +101,8 @@ function MapComponent() {
         maxBounds={bounds}
         maxBoundsViscosity={1.0}
         minZoom={4}>
-          
         <MapClickHandler />
+        <LeafletControlGeocoder />
 
         <LayersControl position="topright">
           <LayersControl.BaseLayer checked name="OpenStreetMap">
@@ -132,7 +133,10 @@ function MapComponent() {
           <LayersControl.Overlay checked name="Markers">
             <LayerGroup>
               {markers.map((marker) => (
-                <Marker key={marker.id} position={[marker.lat, marker.lng]} icon={customIcon}>
+                <Marker
+                  key={marker.id}
+                  position={[marker.lat, marker.lng]}
+                  icon={leafletMarkerIcon}>
                   <Popup>
                     <input
                       type="text"
