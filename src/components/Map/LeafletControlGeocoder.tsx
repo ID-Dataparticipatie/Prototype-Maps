@@ -1,7 +1,7 @@
 import L from "leaflet";
 import Geocoder, { geocoders } from "leaflet-control-geocoder";
 import { useEffect } from "react";
-import { useMap } from "react-leaflet/hooks";
+import { useMap } from "react-leaflet";
 
 import "leaflet-control-geocoder/dist/Control.Geocoder.css";
 

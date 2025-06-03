@@ -16,7 +16,7 @@ function GeoJSONLayer({
         data={data}
         style={style || { color: "blue", weight: 2, opacity: 0.7 }}
         onEachFeature={(feature, layer) => {
-          const naam = feature.properties?.name || "Unknown";
+          const naam = layername || "Unknown";
           layer.bindPopup(naam);
         }}
       />

@@ -17,6 +17,7 @@ import LeafletControlGeocoder from "./LeafletControlGeocoder";
 import GeoJSONLayer from "./GeoJSONLayer";
 import { leafletMarkerIcon, leafletSingleMapBounds } from "./LeafletCustomItems";
 import type { MapMarkerWithText, NamedFeatureCollection } from "../../typings";
+import L from "leaflet";
 
 
 function MapComponent() {
@@ -27,6 +28,10 @@ function MapComponent() {
     loadGeoJson()
       .then((data) => setGeoJson(data))
       .catch((err) => console.error("Error fetching datasets:", err));
+  }, []);
+
+  useEffect(() => {
+    L.Icon.Default.mergeOptions(leafletMarkerIcon);
   }, []);
 
   useEffect(() => {
@@ -44,20 +49,16 @@ function MapComponent() {
   function MapClickHandler() {
     useMapEvents({
       click(e) {
+        console.log(e)
         const newMarker: MapMarkerWithText = {
           id: Date.now(),
           lat: e.latlng.lat,
           lng: e.latlng.lng,
           text: "",
         };
-        if (
-          markers.find(
-            (marker) => calcDistance(marker.lat, marker.lng, newMarker.lat, newMarker.lng) < 0.0001
-          )
-        ) {
-          return;
+        if (markers.find((marker) => calcDistance(marker.lat, marker.lng, newMarker.lat, newMarker.lng) > 0.0001)) {
+          setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
         }
-        setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
       },
     });
     return null;
