@@ -8,28 +8,16 @@ import {
   LayerGroup,
 } from "react-leaflet";
 import { useState, useEffect } from "react";
-import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { loadGeoJson } from "../../util/loadGeoJson";
 import LeafletControlGeocoder from "./LeafletControlGeocoder";
 
 // Fix voor ontbrekende Leaflet marker-icon
-import markerIconPng from "leaflet/dist/images/marker-icon.png";
-import markerShadowPng from "leaflet/dist/images/marker-shadow.png";
+
 import GeoJSONLayer from "./GeoJSONLayer";
+import { leafletMarkerIcon, leafletSingleMapBounds } from "./LeafletCustomItems";
 import type { MapMarkerWithText, NamedFeatureCollection } from "../../typings";
 
-export const leafletMarkerIcon = new L.Icon({
-  iconUrl: markerIconPng,
-  shadowUrl: markerShadowPng,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-});
-
-const bounds = L.latLngBounds([
-  [-85, -180], // Southwest
-  [85, 180], // Northeast
-]);
 
 function MapComponent() {
   const [markers, setMarkers] = useState<MapMarkerWithText[]>([]);
@@ -98,11 +86,11 @@ function MapComponent() {
         preferCanvas={true}
         className="h-[91vh] w-full overflow-hidden"
         // Locks the map to disallow scrolling outside of the map view.
-        maxBounds={bounds}
+        maxBounds={leafletSingleMapBounds}
         maxBoundsViscosity={1.0}
         minZoom={4}>
+
         <MapClickHandler />
-        <LeafletControlGeocoder />
 
         <LayersControl position="topright">
           <LayersControl.BaseLayer checked name="OpenStreetMap">
@@ -158,6 +146,7 @@ function MapComponent() {
             </LayerGroup>
           </LayersControl.Overlay>
         </LayersControl>
+        <LeafletControlGeocoder />
       </MapContainer>
     </div>
   );
