@@ -1,4 +1,5 @@
 import type { FeatureCollection } from "geojson";
+import type { Icon } from "leaflet";
 
 declare module "*.png" {
   const value: string;
@@ -15,6 +16,7 @@ declare interface MapMarkerWithText {
   lat: number;
   lng: number;
   text: string;
+  icon?: Icon;
 }
 
 declare interface NamedFeatureCollection extends FeatureCollection {
