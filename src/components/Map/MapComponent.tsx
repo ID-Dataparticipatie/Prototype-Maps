@@ -6,16 +6,19 @@ import {
   useMapEvents,
   LayersControl,
   LayerGroup,
+  useMap,
 } from "react-leaflet";
 import { useState, useEffect } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { loadGeoJson } from "../../util/loadGeoJson";
 
-import markerIconPng from "leaflet/dist/images/marker-icon.png";
+
 import markerShadowPng from "leaflet/dist/images/marker-shadow.png";
 import GeoJSONLayer from "./GeoJSONLayer";
 import type { NamedFeatureCollection } from "../../typings";
+import "leaflet-control-geocoder/dist/Control.Geocoder.css";
+import "leaflet-control-geocoder";
 
 type Buitenobject = {
   id: number;
@@ -25,33 +28,61 @@ type Buitenobject = {
   type?: string;
 };
 
-// 📍 Verschillende iconen
-const defaultIcon = new L.Icon({
-  iconUrl: "icons/vuilnisbak.png",
+const vuilnisbakIcon = new L.Icon({
+  iconUrl: "/icons/vuilnisbak.png",
   shadowUrl: markerShadowPng,
   iconSize: [25, 41],
   iconAnchor: [12, 41],
 });
 
-const redIcon = new L.Icon({
+const lantaarnpaalIcon = new L.Icon({
   iconUrl: "/icons/lantaarnpaal.png",
   shadowUrl: markerShadowPng,
   iconSize: [25, 41],
   iconAnchor: [12, 41],
 });
 
-const greenIcon = new L.Icon({
-  iconUrl:
-    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png",
+const bushokjeIcon = new L.Icon({
+  iconUrl: "/icons/bushokje.png",
   shadowUrl: markerShadowPng,
   iconSize: [25, 41],
   iconAnchor: [12, 41],
 });
 
+const boomIcon = new L.Icon({
+  iconUrl: "/icons/boom.png",
+  shadowUrl: markerShadowPng,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+});
 const bounds = L.latLngBounds([
   [-85, -180],
   [85, 180],
 ]);
+
+function GeocoderControl() {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!map) return;
+
+    const geocoder = (L.Control as any)
+      .geocoder({
+        defaultMarkGeocode: true,
+        placeholder: "Zoek een adres...",
+      })
+      .on("markgeocode", function (e: any) {
+        map.setView(e.geocode.center, 18);
+      })
+      .addTo(map);
+
+    return () => {
+      map.removeControl(geocoder);
+    };
+  }, [map]);
+
+  return null;
+}
 
 function MapComponent() {
   const [buitenobjecten, setBuitenobjecten] = useState<Buitenobject[]>([]);
@@ -109,14 +140,27 @@ function MapComponent() {
 
   const getIconForType = (type: string | undefined) => {
     switch (type) {
-      case "red":
-        return redIcon;
-      case "green":
-        return greenIcon;
+      case "bushokje":
+        return bushokjeIcon;
+      case "lantaarnpaal":
+        return lantaarnpaalIcon;
+      case "boom":
+        return boomIcon;
+      case "vuilnisbak":
       default:
-        return defaultIcon;
+        return vuilnisbakIcon;
     }
   };
+
+  <select
+  value={selectedType}
+  onChange={(e) => setSelectedType(e.target.value)}
+  className="border p-1 rounded">
+  <option value="bushokje">Bushokje</option>
+  <option value="lantaarnpaal">Lantaarnpaal</option>
+  <option value="boom">Boom</option>
+  <option value="vuilnisbak">Vuilnisbak</option>
+</select>
 
   return (
     <div className="flex flex-col items-center justify-center w-full">
@@ -129,7 +173,7 @@ function MapComponent() {
             onChange={(e) => setSelectedType(e.target.value)}
             className="border p-1 rounded">
             <option value="bushokje">Bushokje</option>
-            <option value="lantaarnpaal">Lantaarnpaal</option>
+            <option value="redIcon">Lantaarnpaal</option>
             <option value="boom">Boom</option>
             <option value="vuilnisbak">Vuilnisbak</option>
           </select>
@@ -156,6 +200,7 @@ function MapComponent() {
         maxBoundsViscosity={1.0}
         minZoom={3}>
         <MapClickHandler />
+        <GeocoderControl />
 
         <LayersControl position="topright">
           <LayersControl.BaseLayer checked name="OpenStreetMap">

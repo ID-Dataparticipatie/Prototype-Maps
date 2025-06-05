@@ -1,8 +1,8 @@
 function Header() {
   return (
     <header className="bg-white ">
-      <nav className="px-8 p-2 justify-between items-center flex ml-[10%] mr-[10%]">
-        <div className="flex pl-15 h-20">
+      <nav className="px-8 p-0.2 justify-between items-center flex ml-[10%] mr-[10%]">
+        <div className="flex pl-15 h-10">
           <a className="" href="/">
             <img
               src="logo-denhaag.jpg"
@@ -20,7 +20,7 @@ function Header() {
               src="favicon.png"
               alt="Data & participatie logo"
               className="h-full w-full object-cover"
-            />
+            />iz
           </a>
         </div>
         {/* <h2 className="subtitle">Kaart van Den Haag</h2>

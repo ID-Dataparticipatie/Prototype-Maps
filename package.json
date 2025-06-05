@@ -17,6 +17,7 @@
     "@vitejs/plugin-react-swc": "^3.8.1",
     "css-loader": "^7.1.2",
     "leaflet": "^1.9.4",
+    "leaflet-control-geocoder": "^3.2.0",
     "prototype-maps": "file:",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
