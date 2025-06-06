@@ -1,5 +1,7 @@
 import L from "leaflet";
-import Geocoder, { geocoders } from "leaflet-control-geocoder";
+import Geocoder, {
+  geocoders,
+} from "leaflet-control-geocoder";
 import { useEffect } from "react";
 import { useMap } from "react-leaflet";
 
@@ -17,10 +19,15 @@ function LeafletControlGeocoder() {
     })
       .on("markgeocode", function (e) {
         var latlng = e.geocode.center;
-        L.marker(latlng)
+
+        const locationMarker = L.marker(latlng)
           .addTo(map)
           .bindPopup(e.geocode.name)
-          .openPopup();
+          .openPopup()
+
+        .on("popupclose", () => {
+          map.removeLayer(locationMarker);
+        });
         map.fitBounds(e.geocode.bbox);
       })
       .addTo(map);

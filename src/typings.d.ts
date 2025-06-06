@@ -13,10 +13,11 @@ declare module "*.css" {
 
 declare interface MapMarkerWithText {
   id: number;
+  name?: string;
+  icon?: Icon;
   lat: number;
   lng: number;
   text: string;
-  icon?: Icon;
 }
 
 declare interface NamedFeatureCollection extends FeatureCollection {

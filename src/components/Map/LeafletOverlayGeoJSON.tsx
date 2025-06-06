@@ -17,7 +17,7 @@ function LeafletOverlayGeoJSON({
         style={style || { color: "blue", weight: 2, opacity: 0.7 }}
         onEachFeature={(feature, layer) => {
           const naam = layername || "Unknown";
-          layer.bindPopup(naam);
+          layer.bindPopup(naam, { closeOnClick: true });
         }}
       />
     </LayersControl.Overlay>
