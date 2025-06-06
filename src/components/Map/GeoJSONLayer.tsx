@@ -1,6 +1,9 @@
 import type { FeatureCollection } from "geojson";
 import { LayersControl, GeoJSON } from "react-leaflet";
 
+
+
+
 function GeoJSONLayer({
   layername,
   data,
@@ -23,5 +26,7 @@ function GeoJSONLayer({
     </LayersControl.Overlay>
   );
 }
+
+
 
 export default GeoJSONLayer;
