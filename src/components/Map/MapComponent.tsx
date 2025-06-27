@@ -17,11 +17,13 @@ import * as turf from "@turf/turf";
 import type { FeatureCollection, Geometry } from "geojson";
 import booleanPointOnLine from "@turf/boolean-point-on-line";
 
-import markerShadowPng from "leaflet/dist/images/marker-shadow.png";
 import GeoJSONLayer from "./GeoJSONLayer";
 import type { NamedFeatureCollection } from "../../typings";
 import "leaflet-control-geocoder/dist/Control.Geocoder.css";
 import "leaflet-control-geocoder";
+import LeafletControlGeocoder from "./LeafletControlGeocoder";
+import { leafletMarkerIcon } from "./LeafletCustomItems";
+
 
 /* ------------------------------------------------------------------
   Types
@@ -41,7 +43,6 @@ type Buitenobject = {
 const createIcon = (url: string) =>
   new L.Icon({
     iconUrl: url,
-    shadowUrl: markerShadowPng,
     iconSize: [25, 41],
     iconAnchor: [12, 41],
   });
@@ -56,22 +57,22 @@ const icons = {
 /* ------------------------------------------------------------------
   Geocoder-control
 -------------------------------------------------------------------*/
-function GeocoderControl() {
-  const map = useMap();
+// function GeocoderControl() {
+//   const map = useMap();
 
-  useEffect(():any => {
-    if (!map) return;
+//   useEffect(():any => {
+//     if (!map) return;
 
-    const geocoder = (L.Control as any)
-      .geocoder({ defaultMarkGeocode: true, placeholder: "Zoek een adres…" })
-      .on("markgeocode", (e: any) => map.setView(e.geocode.center, 18))
-      .addTo(map);
+//     const geocoder = (L.Control as any)
+//       .geocoder({ defaultMarkGeocode: true, placeholder: "Zoek een adres…" })
+//       .on("markgeocode", (e: any) => map.setView(e.geocode.center, 18))
+//       .addTo(map);
 
-    return () => map.removeControl(geocoder);
-  }, [map]);
+//     return () => map.removeControl(geocoder);
+//   }, [map]);
 
-  return null;
-}
+//   return null;
+// }
 
 /* ------------------------------------------------------------------
   Hoofdcomponent
@@ -90,6 +91,7 @@ export default function MapComponent() {
 
   /* ------------- effects ------------- */
   useEffect(() => {
+    L.Icon.Default.mergeOptions(leafletMarkerIcon);
     loadGeoJson().then(setGeoJson).catch(console.error);
   }, []);
 
@@ -262,7 +264,7 @@ export default function MapComponent() {
         center={[52.0667905, 4.3234636]}
         zoom={25}
         preferCanvas
-        className="h-[91vh] w-full"
+        className="h-[91vh] w-full overflow-hidden"
         maxBounds={L.latLngBounds([
           [-85, -180],
           [85, 180],
@@ -270,7 +272,8 @@ export default function MapComponent() {
         maxBoundsViscosity={1}
         minZoom={3}>
         <MapClickHandler />
-        <GeocoderControl />
+        <LeafletControlGeocoder />
+        
 
         <LayersControl position="topright">
           {/* basemaps */}

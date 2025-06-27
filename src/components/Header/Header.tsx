@@ -14,10 +14,10 @@ function Header() {
         <div className="flex gap-x-12 text-2xl justify-center">
           <h1 className="denhaag-text">PrototypeMaps</h1>
         </div>
-        <div className="hidden lg:flex pr-15 h-20">
+        <div className="hidden lg:flex pr-15 h-20 object-center">
           <a className="" href="/">
             <img
-              src="favicon.png"
+              src="logo.png"
               alt="Data & participatie logo"
               className="h-full w-full object-cover"
             />
